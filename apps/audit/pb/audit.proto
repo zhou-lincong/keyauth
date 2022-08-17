@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package keyauth.audit;
+option go_package = "github.com/zhou-lincong/keyauth/apps/audit";
+
+//通过RPC来鉴权
+service RPC {
+    rpc AuditOperate(OperateLog) returns(AuditOperateLogResponse); 
+}
+
+// 操作日志
+message OperateLog {
+    // 谁
+    // @gotags: json:"username" bson:"username"
+    string username = 1;
+    // 什么时候
+    // @gotags: json:"when" bson:"when"
+    int64 when = 2;
+    // 对哪个服务
+    // @gotags: json:"service" bson:"service"
+    string service = 3;
+    // 对哪种资源
+    // @gotags: json:"resource" bson:"resource"
+    string resource = 4;
+    // 进行了什么操作
+    // @gotags: json:"action" bson:"action"
+    string action = 5;
+    // 请求参数, URL部分
+    // @gotags: json:"url" bson:"url"
+    string url = 6;
+    // 请求参数, body部分
+    // 请求参数
+    // @gotags: json:"request" bson:"request"
+    string request = 7;
+    // 请求响应
+    // @gotags: json:"response" bson:"response"
+    string response = 8;
+    // 调用时间
+    // @gotags: json:"cost" bson:"cost"
+    int64 cost = 9;
+    // 状态码
+    // @gotags: json:"status_code" bson:"status_code"
+    int64 status_code = 10;
+    // 用户代理
+    // @gotags: json:"user_agent" bson:"user_agent"
+    string user_agent = 11;
+    // 哪个地方的ip发的请求
+    // @gotags: json:"remote_ip" bson:"remote_ip"
+    string remote_ip = 12;
+    // 其他信息
+    // @gotags: json:"meta" bson:"meta"
+    map<string,string> meta = 13;
+}
+
+message AuditOperateLogResponse {}

@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package keyauth.user;
+option go_package = "github.com/zhou-lincong/keyauth/apps/user";
+
+import "github.com/infraboard/mcube/pb/page/page.proto";
+import "github.com/infraboard/mcube/pb/request/request.proto";
+
+service Service {
+    rpc CreateUser(CreateUserRequest) returns(User);
+    rpc QueryUser(QueryUserRequest) returns(UserSet);
+    rpc DescribeUser(DescribeUserRequest) returns(User);
+    rpc UpdateUser(UpdateUserRequest) returns(User);
+    rpc DeleteUser(DeleteUserRequest) returns(User);
+}
+
+// User todo
+message User {
+    // 唯一ID
+    // @gotags: json:"id" bson:"_id"
+    string id = 1;
+    // 录入时间
+    // @gotags: json:"create_at" bson:"create_at"
+    int64 create_at = 2;
+    // 更新时间
+    // @gotags: json:"update_at" bson:"update_at"
+    int64 update_at = 3;
+    // 更新人
+    // @gotags: json:"update_by" bson:"update_by"
+    string update_by = 4;
+    // user信息
+    // @gotags: json:"data" bson:"data"
+    CreateUserRequest data = 5;
+}
+
+message CreateUserRequest {
+    // 创建人
+    // @gotags: json:"create_by" bson:"create_by"
+    string create_by = 1;
+    // 用户名称
+    // @gotags: json:"name" bson:"name" validate:"required"
+    string name = 2;
+    // 用户的密码
+    // @gotags: json:"password" bson:"password" validate:"required"
+    string password = 3;
+    // 用户属于那个组织或者公司
+    // @gotags: json:"domain" bson:"domain"
+    string domain = 4;
+}
+
+message QueryUserRequest {
+    // 分页参数
+    // @gotags: json:"page" 
+    infraboard.mcube.page.PageRequest page = 1;
+    // 关键字参数
+    // @gotags: json:"keywords"
+    string keywords = 2;  
+}
+
+// UserSet todo
+message UserSet {
+    // 分页时，返回总数量
+    // @gotags: json:"total"
+    int64 total = 1;
+    // 一页的数据
+    // @gotags: json:"items"
+    repeated User items = 2;
+}
+//默认通过user id搜索
+enum DescribeBy {
+    USER_ID = 0;
+    USER_NAME = 1;
+}
+
+// 希望通过 domain+username 可以查询到用户
+// 同时兼容Id和domain+username
+message DescribeUserRequest {
+    // describe_by
+    // @gotags: json:"describe_by"
+    DescribeBy describe_by = 1;
+    // user_id
+    // @gotags: json:"user_id"
+    string user_id = 2;
+    // domain
+    // @gotags: json:"domain"
+    string domain = 3;
+    // user_name
+    // @gotags: json:"user_name"
+    string user_name = 4;
+}
+
+message UpdateUserRequest {
+    // user id
+    // @gotags: json:"id"
+    string id = 1;
+    // 更新模式
+    // @gotags: json:"update_mode"
+    infraboard.mcube.request.UpdateMode update_mode = 2;
+    // 更新人
+    // @gotags: json:"update_by"
+    string update_by = 3;
+    // 更新时间
+    // @gotags: json:"update_at"
+    int64 update_at = 4;
+    // 更新的user信息
+    // @gotags: json:"data"
+    CreateUserRequest data = 5;
+}
+
+message DeleteUserRequest {
+    // user id
+    // @gotags: json:"id"
+    string id = 1;
+}

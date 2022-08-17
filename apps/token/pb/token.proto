@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package keyauth.token;
+option go_package = "github.com/zhou-lincong/keyauth/apps/token";
+
+import "github.com/infraboard/mcube/pb/page/page.proto";
+
+service Service {
+    // 颁发Token(Login)
+    rpc IssueToken(IssueTokenRequest) returns(Token);
+    // 撤销Token(Logout)
+    rpc RevolkToken(RevolkTokenRequest) returns(Token);
+
+    // 校验Token的接口(内部服务使用)
+    rpc ValidateToken(ValidateTokenRequest) returns(Token);
+
+    // 查询Token, 查询用于REST ful API访问颁发出去的Token
+    rpc QueryToken(QueryTokenRequest) returns(TokenSet);
+}
+
+// Token todo
+message Token {
+    // 唯一ID
+    // @gotags: json:"access_token" bson:"_id"
+    string access_token = 1;
+    // 颁发时间
+    // @gotags: json:"issue_at" bson:"issue_at"
+    int64 issue_at = 2;
+    // 更新时间
+    // @gotags: json:"update_at" bson:"update_at"
+    int64 update_at = 3;
+    // 更新人
+    // @gotags: json:"update_by" bson:"update_by"
+    string update_by = 4;
+    // 颁发请求
+    // @gotags: json:"data" bson:"data"
+    IssueTokenRequest data = 5;
+    // Access Token过期时间(绝对时间), 10分钟,  now() + 10分钟
+    // @gotags: json:"access_token_expired_at" bson:"access_token_expired_at"
+    int64 access_token_expired_at = 6;
+    // token过期了, 允许刷新
+    // @gotags: json:"refresh_token" bson:"refresh_token"
+    string refresh_token = 7;
+    // refresh_token过期时间(绝对时间), 10分钟,  now() + 10分钟
+    // @gotags: json:"refresh_token_expired_at" bson:"refresh_token_expired_at"
+    int64 refresh_token_expired_at = 8;
+    // 当前用户属于哪个组
+    // @gotags: json:"domian" bson:"domian"
+    string domian = 9;
+    // 用于传递额外信息
+    // @gotags: json:"meta" bson:"meta"
+    map<string,string> meta = 10;
+}
+
+// 授权的类型
+enum GranteType {
+    // 通过Paasword授权
+    PASSWORD = 0;
+    // LDAP认证
+    LADP = 1;
+    // 通过ACCESS TOKEN来获取一个token, 用于API用户访问(RESTful SDK)
+    // 如果有同事要用http RESTful API调服务，这个时候用户不可能拿着账号密码来访问，
+    // 因为这种访问的token会过期，拿这个时候给他生成一个额外的token
+    // 那就使用一个临时的token来生成一个额外的token
+    // 通过一个user Password的Token 来生成一个 ACCESS TOKEN，可以指定过期时间
+    // HTTP API 编程访问
+    ACCESS_TOKEN = 2;
+    // 通过REFRESH TOKEN获取令牌
+    REFRSH_TOKEN = 3;
+}
+
+// 颁发token
+message IssueTokenRequest {
+    // 授权类型，默认password
+    // @gotags: json:"grante_type" bson:"grante_type"
+    GranteType grante_type = 1;
+    // 授权类型
+    // @gotags: json:"user_domain" bson:"user_domain"
+    string user_domain = 2;
+    // 授权类型
+    // @gotags: json:"user_name" bson:"user_name"
+    string username = 3;
+    // 授权类型，不需要入库，不设bson
+    // @gotags: json:"password" bson:"-"
+    string password = 4;
+}
+
+message QueryTokenRequest {
+    // 分页参数
+    // @gotags: json:"page" 
+    infraboard.mcube.page.PageRequest page = 1;
+    // 关键字参数
+    // @gotags: json:"keywords"
+    string keywords = 2;  
+}
+
+// TokenSet todo
+message TokenSet {
+    // 分页时，返回总数量
+    // @gotags: json:"total"
+    int64 total = 1;
+    // 一页的数据
+    // @gotags: json:"items"
+    repeated Token items = 2;
+}
+
+message ValidateTokenRequest {
+    // access token
+    // @gotags: json:"access_token"
+    string access_token = 1;
+}
+
+message DescribeTokenRequest {
+    // access token
+    // @gotags: json:"access_token"
+    string access_token = 1;
+}
+
+message RevolkTokenRequest {
+    // access token
+    // @gotags: json:"access_token"
+    string access_token = 1;
+    // refresh token, 当做撤销凭证
+    // @gotags: json:"refresh_token"
+    string refresh_token = 2;
+}

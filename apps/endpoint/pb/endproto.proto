@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package keyauth.endpoint;
+option go_package = "github.com/zhou-lincong/keyauth/apps/endpoint";
+
+service RPC {
+    // 服务功能注册
+    rpc RegistryEndpoint(EndpointSet) returns(RegistryResponse);
+}
+
+// 服务功能列表
+message EndpointSet {
+    // 服务名称
+    // @gotags: json:"service" bson:"service"
+    string service = 1;
+    // 服务功能
+    // @gotags: json:"endpoints" bson:"endpoints"
+    repeated Endpoint endpoints = 2;
+}
+
+message RegistryResponse {
+    // 注册返回
+    // @gotags: json:"message" bson:"message"
+    string message = 1;
+}
+
+// 服务功能
+message Endpoint {
+    // 资源名称, 路由装饰定义
+    // @gotags: json:"resource" bson:"resource"
+    string resource = 2;
+    // 资源操作方法
+    // @gotags: json:"action" bson:"action"
+    string action = 3;
+    // 该接口的标签, 该功能的标签
+    // @gotags: json:"labels" bson:"labels"
+    map<string,string> labels = 4;
+    // HTTP 路由定义
+    // @gotags: json:"path" bson:"path"
+    string path = 5;
+    // HTTP 路由定义
+    // @gotags: json:"method" bson:"method"
+    string method = 6;
+}

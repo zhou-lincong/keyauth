@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package keyauth.role;
+option go_package = "github.com/zhou-lincong/keyauth/apps/role";
+
+import "github.com/infraboard/mcube/pb/page/page.proto";
+
+service RPC {
+    // 服务功能注册
+    rpc QueryRole(QueryRoleRequest) returns(RoleSet);
+}
+
+message QueryRoleRequest {
+    // 分页参数
+    // @gotags: json:"page" 
+    infraboard.mcube.page.PageRequest page = 1;
+    // 根据role名称批量获取role对象
+    // @gotags: json:"role_names" 
+    repeated string role_names = 2;
+}
+
+message RoleSet {
+    // 角色id
+    // @gotags: json:"total" bson:"total"
+    int64 total = 1;
+    // 角色id
+    // @gotags: json:"items" bson:"items"
+    repeated Role items = 2;
+}
+
+message Role {
+    // 角色id
+    // @gotags: json:"id" bson:"_id"
+    string id = 1;
+    // 角色创建时间
+    // @gotags: json:"name" bson:"create_at"
+    int64 create_at = 2;
+    // 角色名称
+    // @gotags: json:"spec" bson:"spec"
+    CreateRoleRequest spec = 3;
+}
+
+message CreateRoleRequest {
+    // 角色名称
+    // @gotags: json:"name" bson:"name"
+    string name = 1;
+    // 角色标识
+    // @gotags: json:"description" bson:"description"
+    string description = 2;
+    // 角色的权限
+    // @gotags: json:"permissions" bson:"permissions"
+    repeated Permission permissions = 3;
+    // 角色的一些额外属性
+    // @gotags: json:"meta" bson:"meta"
+    map<string,string> meta = 5;
+}
+
+// 那个服务 的哪些权限
+message Permission {
+    // 服务名称
+    // @gotags: json:"service" bson:"service"
+    string service = 1;
+    // 是否允许访问所有功能
+    // @gotags: json:"allow_all" bson:"allow_all
+    bool allow_all = 3;
+    // 服务功能
+    // @gotags: json:"featrues" bson:"featrues"
+    repeated Featrue featrues = 2;
+}
+
+message Featrue {
+    // 资源名称
+    // @gotags: json:"resource" bson:"resource"
+    string resource = 3;
+    // 资源操作
+    // @gotags: json:"action" bson:"action"
+    string action = 4;    
+}
+
+message PermissionRequest {
+    // 服务名称
+    // @gotags: json:"service"
+    string service = 1;
+    // 资源名称
+    // @gotags: json:"resource"
+    string resource =2;
+    // 资源操作
+    // @gotags: json:"action"
+    string action =3;
+}

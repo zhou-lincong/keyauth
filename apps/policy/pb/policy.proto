@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package keyauth.policy;
+option go_package = "github.com/zhou-lincong/keyauth/apps/policy";
+
+import "github.com/infraboard/mcube/pb/page/page.proto";
+
+//通过RPC来鉴权
+service RPC {
+    rpc ValidatePermission(ValidatePermissionRequest) returns(Policy);
+    rpc QueryPolicy(QueryPolicyRequest) returns(PolicySet);
+}
+
+// 鉴权请求：用户能不发操作该资源
+message ValidatePermissionRequest {
+    // 用户名
+    // @gotags: json:"username" bson:"username"
+    string username = 1;
+    // 空间
+    // @gotags: json:"namespace" bson:"namespace"
+    string namespace = 5;
+    // 服务
+    // @gotags: json:"service" bson:"service"
+    string service = 2; 
+    // 资源
+    // @gotags: json:"resource" bson:"resource"
+    string resource = 3;
+    // 操作
+    // @gotags: json:"action" bson:"action"
+    string action = 4;
+}
+
+message QueryPolicyRequest {
+    // 分页参数
+    // @gotags: json:"page" 
+    infraboard.mcube.page.PageRequest page = 1;
+    // 用户名
+    // @gotags: json:"username"
+    string username = 2;
+    // 空间
+    // @gotags: json:"namespace"
+    string namespace = 5;
+    // 角色名称
+    // @gotags: json:"role"
+    string role = 3;
+}
+
+message PolicySet {
+    // 总量
+    // @gotags: json:"id" bson:"_id"
+    int64 total = 1;
+    // 列表
+    // @gotags: json:"items" bson:"items"
+    repeated Policy items = 2;
+}
+
+
+// 策略定义
+message Policy {
+    // 角色id
+    // @gotags: json:"id" bson:"_id"
+    string id = 1;
+    // 角色创建时间
+    // @gotags: json:"create_at" bson:"create_at"
+    int64 create_at = 2;
+    // 策略定义
+    // @gotags: json:"spec" bson:"spec"
+    CreatePolicyRequest spec  =3;
+}
+
+// PRBAC
+message CreatePolicyRequest {
+    // 用户名
+    // @gotags: json:"username" bson:"username"
+    // @gotags: json:"username" bson:"username" validate:"required"
+    string username = 1;
+    // 角色名称
+    // @gotags: json:"role" bson:"role"
+    // @gotags: json:"role" bson:"role" validate:"required"
+    string role = 2;
+    // 空间
+    // @gotags: json:"namespace" bson:"namespace"
+    string namespace = 3;
+}
